@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #6c757d;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        .main {
+            transition: margin-left .5s;
+            padding: 16px;
+            margin-left: 0;
+        }
+
+        .search-box input[type="text"], .search-box input[type="number"], .search-box button {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #333;
+            background-color: #ffffff;
+            color: #495057;
+            border-radius: 5px;
+        }
+
+        .search-box input[type="submit"], .search-box button {
+            background-color: #17a2b8;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-box input[type="submit"]:hover, .search-box button:hover {
+            background-color: #333;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            color: #212529;
+            background-color: #ffffff;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #e9ecef;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .bold-green {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .sidebar-title {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            padding: 8px 32px;
+            text-align: center;
+        }
+
+        .circle-icon {
+            border-radius: 50%;
+        }
+        .chat-box {
+            width: 100%;
+            padding: 10px;
+            background-color: #f4f4f4; /* Cool grey background */
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        #chatbox {
+            height: 300px; /* Height of chat area */
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        .chat-message {
+            padding: 5px;
+            margin: 5px 0;
+            border-radius: 10px;
+        }
+        .assistant-message {
+            background-color: #add8e6; /* Light blue for assistant messages */
+            text-align: left;
+        }
+        .user-message {
+            background-color: #d3d3d3; /* Light grey for user messages */
+            text-align: right;
+        }
+        #inputbox {
+            width: calc(100% - 120px); /* Adjust width */
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            box-sizing: border-box; /* Adjust box sizing */
+        }
+        #sendButton {
+            width: 100px; /* Fixed width */
+            background-color: #17a2b8;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 10px;
+        }
+        #sendButton:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <div class="sidebar-title">
+        <img src="{{ url_for('static', filename='skillset.png') }}" alt="Developer Icon" class="circle-icon" style="height: 30px; width: 30px; margin-right: 10px;">
+        SkillSette
+    </div>
+    <div class="search-box">
+        <input type="number" id="similarity" placeholder="Enter similarity value" min="1" max="100" step="1" style="width: 200px;">
+        <input type="text" id="filterSkills" placeholder="Filter by skills...">
+        <input type="text" id="filterCountry" placeholder="Filter by country...">
+<!--        <button onclick="performSearch()">Search</button>-->
+    </div>
+</div>
+
+<div class="main">
+    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+
+    <div id="loadingSpinner" style="display: none;">
+        <div class="loader"></div>
+    </div>
+    <div class="chat-box-container">
+            <div class="chat-box">
+                <div id="chatbox"></div>
+                <div class="input-area">
+                    <input type="text" id="inputbox" onkeydown="checkInput(event)">
+                    <button id="sendButton" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+            <!-- ... [rest of the main content] ... -->
+        </div>
+    <div class="container">
+        <table id="resultsTable">
+            <tr>
+                <th>Avatar</th>
+                <th>Full Name</th>
+                <th>Skills</th>
+                <th>Country</th>
+                <th>English Level</th>
+                <th>Rate</th>
+            </tr>
+            <!-- Results will be inserted here -->
+        </table>
+    </div>
+</div>
+
+<script>
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+        document.querySelector(".main").style.marginLeft = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.querySelector(".main").style.marginLeft= "0";
+    }
+
+    var globalResults = []; // To store the global results for filtering
+
+     function performSearch() {
+            var query = document.getElementById('searchQuery').value;
+            var similarity = document.getElementById('similarity').value || 0;
+            document.getElementById('loadingSpinner').style.display = 'block'; // Show spinner
+            fetch('/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: query, similarity: parseInt(similarity, 10) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                globalResults = data.results; // Store the results globally
+                res= data.main_res
+                document.getElementById('main').innerText = res;
+                sortAndDisplayResults(globalResults);
+                document.getElementById('loadingSpinner').style.display = 'none'; // Hide spinner
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loadingSpinner').style.display = 'none'; // Hide spinner
+            });
+        }
+
+        function sortAndDisplayResults(results) {
+            var sortedResults = results.sort((a, b) => {
+                var rateA = parseFloat(a.text.split(' and rate: ')[1]);
+                var rateB = parseFloat(b.text.split(' and rate: ')[1]);
+                return rateB - rateA; // For descending order
+            });
+            updateTable(sortedResults);
+        }
+
+       function updateTable(results) {
+    var table = document.getElementById('resultsTable');
+    table.innerHTML = `
+        <tr>
+            <th>Avatar</th>
+            <th>Full Name</th>
+            <th>Skills</th>
+            <th>Country</th>
+            <th>English Level</th>
+            <th>Rate</th>
+        </tr>`;
+
+    var filterSkills = document.getElementById('filterSkills').value.toLowerCase();
+
+    results.forEach(result => {
+        var row = table.insertRow(-1);
+        var cells = result.text.split(' with skills: ');
+        var name_country = cells[0].split(' from: ');
+        var avatarURL = result.metadata.avatar; // Placeholder for avatar URL
+        var skillsEnglishRate = cells[1].split(' and rate: ');
+        var skillsEnglish = skillsEnglishRate[0].split(' with english level: ');
+        var rate = skillsEnglishRate[1] ? skillsEnglishRate[1] : 'None';
+
+        var avatarCell = row.insertCell(0);
+        avatarCell.innerHTML = `<img src="${avatarURL}" alt="Avatar" style="width: 50px; height: 50px;">`;
+
+        row.insertCell(1).innerHTML = name_country[0].replace('developer ', '');
+
+        // Apply bold green style to matching skills
+        var skills = skillsEnglish[0];
+        if (filterSkills) {
+            var re = new RegExp(filterSkills, 'gi');
+            skills = skills.replace(re, (match) => `<span class="bold-green">${match}</span>`);
+        }
+        row.insertCell(2).innerHTML = skills;
+
+        row.insertCell(3).innerHTML = name_country[1];
+        row.insertCell(4).innerHTML = skillsEnglish[1];
+        row.insertCell(5).innerHTML = rate;
+    });
+}
+
+
+
+        function filterResults() {
+            var filterSkills = document.getElementById('filterSkills').value.toLowerCase();
+            var filterCountry = document.getElementById('filterCountry').value.toLowerCase();
+
+            var filteredResults = globalResults.filter(result => {
+                return result.text.toLowerCase().includes(filterSkills) && result.text.toLowerCase().includes(filterCountry);
+            });
+
+            updateTable(filteredResults);
+        }
+
+        document.getElementById('filterSkills').addEventListener('input', filterResults);
+        document.getElementById('filterCountry').addEventListener('input', filterResults);
+
+        document.getElementById('infoIcon').addEventListener('mouseover', function() {
+            var tooltip = document.createElement('div');
+            tooltip.classList.add('tooltip');
+            tooltip.textContent = 'Similarity is a measure of how closely the search results match the query, based on a scale of 1 to 100. Higher values indicate closer matches.';
+            document.body.appendChild(tooltip);
+            var rect = this.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = rect.bottom + 'px';
+            tooltip.style.display = 'block';
+        });
+
+        document.getElementById('infoIcon').addEventListener('mouseout', function() {
+            var tooltips = document.getElementsByClassName('tooltip');
+            for (var i = 0; i < tooltips.length; i++) {
+                tooltips[i].parentNode.removeChild(tooltips[i]);
+            }
+        });
+</script>
+
+</body>
+</html>

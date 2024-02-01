@@ -1,0 +1,9 @@
+llama_index==0.9.8
+openai
+chromadb
+sentence-transformers
+pydantic
+transformers
+torch
+pymongo[srv]==3.11
+flask
