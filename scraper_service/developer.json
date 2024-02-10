@@ -1,0 +1,28 @@
+{
+    "ofek":{
+        "first_name":"ofek",
+        "last_name":"tal",
+        "date_of_birth":"1993-07-07",
+        "country": "israel",
+        "email":"tel aviv",
+        "token": "1234567890",
+        "score": 100,
+        "verified": true,
+        "skills": {
+            "python": {
+                "type": "programming",
+                "level": 9
+            },
+            "java": {
+                "type": "programming",
+                "level": 7
+            },
+            "kubernetes": {
+                "type": "devops",
+                "level": 8
+            }
+        }
+    },
+    "ofek2":{},
+    "ofek3":{},
+}
