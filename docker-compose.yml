@@ -11,11 +11,11 @@ services:
       - net
     environment:
       INDEX_NAME: "developers"
-      MONGO_URI: "******************************"
+      MONGO_URI: "mongodb+srv://root:7B8sbEHVaFYZNQGb@codespread-dev.gjbcb.mongodb.net/?retryWrites=true&w=majority"
       DB_NAME: "codespread"
       COLLECTION_NAME: "developers"
       MODEL_NAME: "BAAI/bge-base-en-v1.5"
-      OPENAI_API_KEY: "***********************"
+      OPENAI_API_KEY: "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"
     depends_on:
       - chroma
   query_service:
@@ -23,7 +23,7 @@ services:
     environment:
      INDEX_NAME: "developers"
      MODEL_NAME: "BAAI/bge-base-en-v1.5"
-     OPENAI_API_KEY: "*******************"
+     OPENAI_API_KEY: "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"
     ports:
       - "4001:5001"
     networks:
@@ -45,7 +45,6 @@ volumes:
     driver: local
   index_data:
     driver: local
-
 
 
 #MONGO_URI = os.getenv('MONGO_URI')

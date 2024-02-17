@@ -33,7 +33,7 @@ def perform_query(query_text, similarity):
         # ChromaDB Client Setup
         print(f"start query: {query_text}")
         embed_model = HuggingFaceEmbedding(model_name=EMBEDDING_MODEL)
-        chroma_client = chromadb.HttpClient(host="chroma", port="8000")
+        chroma_client = chromadb.HttpClient(host="localhost", port="8000")
 
         collection_chroma = chroma_client.get_or_create_collection(INDEX_NAME)
         print(f"collection_chroma: {collection_chroma.count()}")
@@ -45,7 +45,7 @@ def perform_query(query_text, similarity):
         index = VectorStoreIndex.from_vector_store(
             vector_store, storage_context=storage_context, service_context=service_context
         )
-
+        
         logger.info(f"similarity: {similarity}")
         query_engine = index.as_query_engine(similarity_top_k=similarity)
         # query_engine_tool = QueryEngineTool(
@@ -82,4 +82,4 @@ def query_endpoint():
 @app.route('/')
 def home():
     return render_template('index.html')
-app.run(debug=True, host='0.0.0.0', port=5001)
+app.run(debug=True, host='0.0.0.0', port=5003)
