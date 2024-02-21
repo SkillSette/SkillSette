@@ -4,7 +4,7 @@
         "last_name":"tal",
         "date_of_birth":"1993-07-07",
         "country": "israel",
-        "email":"tel aviv",
+        "email":"name@domain.com",
         "token": "1234567890",
         "score": 100,
         "verified": true,
