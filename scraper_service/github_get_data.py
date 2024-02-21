@@ -74,7 +74,7 @@ def scan_by_country_route():
 @app.route('/full_scan', methods=['POST'])
 def trigger_full_scan():
     full_scan.delay()
-    # full_scan()
+    # full_scans()
     return jsonify({"message": "Full scan initiated"}), 202
 
 
@@ -83,10 +83,29 @@ def scan_developer():
     username = request.json.get('username')
     if not username:
         return jsonify({"message": "Username is required"}), 400
-    github_user = github.get_user(username)
-    dev = Developer(github_user)
-    db.developers.insert_one(dev.__dict__)
-    return jsonify(dev.__dict__), 200
+
+    # Attempt to get the GitHub user
+    try:
+        github_user = github.get_user(username)
+    except Exception as e:
+        # Handle exceptions, e.g., user not found or API errors
+        return jsonify({"message": str(e)}), 500
+
+    # Prepare the developer information
+    dev = Developer(github_user).__dict__
+
+    # Update the document if exists, otherwise insert a new one
+    result = db.developers.update_one(
+        {"username": username},  # Query criteria
+        {"$set": dev},  # Update document
+        upsert=True  # Insert a new document if one doesn't exist
+    )
+
+    # Check if a new document was inserted or an existing was updated
+    if result.upserted_id:
+        return jsonify(dev), 201  # Return 201 CREATED if a new document was inserted
+    else:
+        return jsonify(dev), 200  # Return 200 OK if an existing document was updated
 
 
 if __name__ == '__main__':
