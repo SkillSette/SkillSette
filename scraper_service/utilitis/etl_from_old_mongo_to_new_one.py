@@ -1,38 +1,36 @@
 import json
+from datetime import datetime
 
 
 def modify_dict(source):
     # Initialize the target dictionary structure
-    print(source.get("user_id", {}))
     target = {
-            "first_name": source.get("first_name", ""),
-            "last_name": source.get("last_name", ""),
-            "user_id": source.get("user_id", ""),
-            "date_of_birth": source.get("date_of_birth", ""),  # Assuming you have a date_of_birth field to fill
-            "country": source.get("country", ""),
-            "email": source.get("email", ""),
-            "token": source.get("token", ""),  # Assuming you have a token field to fill
-            "score": int(source.get("github_rate", 0)),
-            "verified": source.get("verified", False),
-            "skills": {}
-        }
+        "_id": source.get("_id", {}),  # Keeping the _id structure as is
+        "first_name": source.get("first_name", ""),
+        "last_name": source.get("last_name", ""),
+        "avatar": source.get("avatar", ""),
+        "date_of_birth": datetime.strptime(source.get("date_of_birth", ""), "%Y-%m-%d").strftime("%d/%m/%Y") if source.get("date_of_birth") else "",
+        "country": source.get("country", ""),
+        "email": source.get("email", ""),
+        "token": "",  # Placeholder as the example data does not include this field
+        "score": {"$numberInt": str(int(source.get("github_rate", 0)))},  # Convert github_rate to int
+        "github_username": "",  # Placeholder as the example data does not include a direct github_username field
+        "english_level": str(source.get("english_level", "")),  # Ensure it's a string
+        "verified": source.get("verified", False),
+        "skills": []
+    }
 
     # Extracting skills from github_code_level
     if source.get("github_code_level"):
-        for skill, details in source.get("github_code_level", {}).items():
-            target["skills"][skill] = {
-                "type": "programming",  # Assuming all github_code_level skills are programming, adjust as necessary
-                "level": int(details["github_score"] // 10)  # Simplified conversion, adjust the calculation as needed
-            }
+        for skill in source["github_code_level"].keys():
+            target["skills"].append(skill)
 
-    # Extracting and adding topics to skills, assuming 1 as a level indicator for topic presence
-    for topic in source.get("topics", []):
-        for key, value in topic.items():
-            if value:  # Only include topics that have a '1' indicating proficiency or interest
-                target["skills"][key] = {
-                    "type": "knowledge",  # Assuming topics fall under a "knowledge" category
-                    "level": 1  # Arbitrary level for topics, adjust as necessary
-                }
+    # Extracting and adding topics to skills
+    if source.get("topics"):
+        for topic in source["topics"]:
+            for skill in topic.keys():
+                if skill not in target["skills"]:  # Avoid duplicating skills
+                    target["skills"].append(skill)
 
     return target
 

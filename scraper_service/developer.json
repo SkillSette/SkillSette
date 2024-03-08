@@ -23,6 +23,28 @@
             }
         }
     },
-    "ofek2":{},
-    "ofek3":{},
-}
+    "ofek2":{
+    "_id": {
+        "$oid": "65d77eef91a63f99120e89e2"
+    },
+    "first_name": "Ferdinand",
+    "last_name": "Calo'",
+    "avatar":  "https://avatars.githubusercontent.com/u/10059902?v=4",
+    "date_of_birth": "22/10/1975",
+    "country": "Italy",
+    "email": "fexcalo@gmail.com",
+    "token": "",
+    "score": {
+        "$numberInt": "8"
+    },
+    "github_username": "xxxxxx",
+    "english_level": "3",
+    "verified": true,
+    "skills": [
+        "Java",
+        "Gradle",
+        "INI",
+        "Batchfile"
+    ]
+    },
+
