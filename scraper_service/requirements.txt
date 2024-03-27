@@ -1,9 +1,7 @@
 pip==22.3.1
 setuptools==65.5.1
 wheel==0.38.4
-Flask
+Flask==3.0.0
 PyMongo
 PyGithub
-Celery
-redis
 
